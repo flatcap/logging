@@ -3,10 +3,10 @@
 #include <time.h>
 
 const char *log_file = "log.txt";
+const char *levchars = "EWM12345";
 
 int disp_file(time_t stamp, const char *file, int line, const char *function, int level, ...)
 {
-  const char *levchars = "EWM12345";
   static char buf[23] = "";
   static time_t last = 0;
   int ret = 0;
