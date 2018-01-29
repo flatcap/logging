@@ -17,28 +17,48 @@ void print_time()
   printf("%s\n", buf);
 }
 
-int main()
+void sample_calls(void)
 {
-  // logger = disp_stdout;
-  // logger = disp_curses;
-  // logger = disp_file;
-  logger = disp_queue;
-
-  // logger(123, __FILE__, __LINE__, __func__, 2, "direct %s to logger\n", "call");
-
-  // print_time();
   error("danger %s!", "Will Robinson");
   warning("warning %d %s", 42, "don't panic");
   message("message %2.2f", 3.141592654);
   debug(3, "hello %s\n", "world");
+}
 
-  // sleep(5);
-  // flush_queue(disp_curses);
-  // flush_queue(disp_file);
-  // print_time();
+void test_stdout(void)
+{
+  logger = disp_stdout;
+  sample_calls();
+}
 
+void test_curses(void)
+{
+  logger = disp_curses;
+  sample_calls();
+}
+
+void test_file(void)
+{
+  logger = disp_file;
+  sample_calls();
+}
+
+void test_queue(void)
+{
+  logger = disp_queue;
+  print_time();
+  sample_calls();
+  sleep(3);
+  flush_queue(disp_curses);
+  print_time();
+}
+
+void test_memory(void)
+{
   char line[128];
   FILE *fp = NULL;
+
+  logger = disp_queue;
 
   for (size_t i = 0; i < 5; i++)
     warning("before %ld", i);
@@ -60,6 +80,35 @@ int main()
 
   printf("------------------------------\n");
   empty_queue();
+}
+
+int main(int argc, char *argv[])
+{
+  if (argc != 2)
+    return 1;
+
+  // logger(123, __FILE__, __LINE__, __func__, 2, "direct %s to logger\n", "call");
+
+  switch (argv[1][0])
+  {
+    case 'c':
+      test_curses();
+      break;
+    case 'f':
+      test_file();
+      break;
+    case 'm':
+      test_memory();
+      break;
+    case 'q':
+      test_queue();
+      break;
+    case 's':
+      test_stdout();
+      break;
+    default:
+      return 1;
+  }
 
   return 0;
 }

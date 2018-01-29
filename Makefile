@@ -64,6 +64,18 @@ clean:
 distclean: clean
 	$(Q)$(RM) $(DEPDIR) $(OBJDIR) tags
 
+test:	all
+	@for i in c f m q s; do \
+		rm -f log.txt; \
+		./main $$i; \
+		[ -f log.txt ] && cat log.txt || true; \
+	done
+
+valgrind:	all
+	@for i in c f m q s; do \
+		valgrind ./main $$i; \
+	done
+
 force:
 
 -include $(SRC:%.c=$(DEPDIR)/%.d)
