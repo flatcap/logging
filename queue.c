@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <fcntl.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,12 +17,19 @@ int LogEntries = 0;
 int disp_queue(time_t stamp, const char *file, int line, const char *function, int level, ...)
 {
   char buf[128] = "";
+  int err = errno;
 
   va_list ap;
   va_start(ap, level);
   const char *fmt = va_arg(ap, const char *);
   int ret = vsnprintf(buf, sizeof(buf), fmt, ap);
   va_end(ap);
+
+  if (level == LL_PERROR)
+  {
+    ret += snprintf(buf + ret, sizeof(buf) - ret, ": %s", strerror(err));
+    level = LL_ERROR;
+  }
 
   struct LogLine *ll = calloc(1, sizeof(*ll));
   ll->time = time(NULL);

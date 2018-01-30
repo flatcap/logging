@@ -1,9 +1,10 @@
+#include <errno.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
-#include "logging.h"
 #include "curses.h"
 #include "file.h"
+#include "logging.h"
 #include "queue.h"
 #include "stdout.h"
 
@@ -19,6 +20,8 @@ void print_time()
 
 void sample_calls(void)
 {
+  errno = EPERM;
+  perror("function");
   error("danger %s!", "Will Robinson");
   warning("warning %d %s", 42, "don't panic");
   message("message %2.2f", 3.141592654);
